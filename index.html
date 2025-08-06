@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>CALCULADORA MARVEL</title>
+</head>
+<body>
+<header>
+    <a class="logo-link">
+        <img src="logo.png" alt="Logo de la calculadora">
+    </a>
+    <nav>
+        <a class="nav-btn" href="index.html">Inicio</a>
+        <a class="nav-btn" href="combate.html">Combate</a>
+        <a class="nav-btn" href="comandos.html">Comandos</a>
+    </nav>
+</header>
+    <div class="main-flex-container">
+        <div class="ATRIBUTOS">
+            <h1>ATRIBUTOS</h1>
+            <p>
+                <label for="vitalidad">VITALIDAD:</label>
+                <input type="number" id="VIT" value="0">
+            </p>
+            <p>
+                <label for="velocidad">VELOCIDAD:</label>
+                <input type="number" id="VEL" value="0">
+            </p>
+            <p>
+                <label for="fuerza">FUERZA:</label>
+                <input type="number" id="FUE" value="0">
+            </p>
+            <p>
+                <label for="resistencia">RESISTENCIA:</label>
+                <input type="number" id="RES" value="0">
+            </p>
+            <p>
+                <label for="reduccion_pasiva">REDUCCION PASIVA:</label>
+                <input type="number" id="REP" value="0">
+            </p>
+            <p>
+                <label for="reflejos">REFLEJOS:</label>
+                <input type="number" id="REF" value="0">
+            </p>
+            <p>
+                <label for="voluntad">VOLUNTAD:</label>
+                <input type="number" id="VOL" value="0">
+            </p>
+            <p>
+                <button id="guardar_estadisticas">GUARDAR INFO</button>
+            </p>
+        </div>
+        <div class="crearArma">
+            <h1>CREAR / MODIFICAR ARMA</h1>
+            <p>
+                <label for="nombre_arma">NOMBRE DEL ARMA:</label>
+                <input type="text" id="nombre_arma" placeholder="Nombre del arma">
+            </p>
+            <p>
+                <label for="abreviatura_arma">ABREVIATURA:</label>
+                <input type="text" id="abreviatura_arma" maxlength="5" placeholder="Ej: ESPD">
+            </p>
+            <p>
+                <label for="ATQ">ATQ:</label>
+                <input type="number" id="ATQ" value="0">
+            </p>
+            <p>
+                <label for="DEF">DEF:</label>
+                <input type="number" id="DEF" value="0">
+            </p>
+            <button id="crear_arma">CREAR ARMA</button>
+            <div id="armas_editables"></div>
+        </div>
+        <div class="guardar-info">
+            <h1>GUARDAR / CARGAR INFORMACIÓN</h1>
+            <p>
+                <label for="nombre_archivo">Nombre del archivo:</label>
+                <input type="text" id="nombre_archivo" placeholder="Nombre del personaje">
+            </p>
+            <button id="descargar_json">Descargar JSON</button>
+            <div class="file-input-wrapper">
+                <input type="file" id="cargar_json" accept=".json">
+            </div>
+        </div>
+        <div>
+            <div id="estadisticas_guardadas" class="panel-estadisticas" style="display:none;">
+                <h2>Estadísticas Guardadas</h2>
+                <ul>
+                    <li>Vitalidad: <span id="stat_vit"></span></li>
+                    <li>Velocidad: <span id="stat_vel"></span></li>
+                    <li>Fuerza: <span id="stat_fue"></span></li>
+                    <li>Resistencia: <span id="stat_res"></span></li>
+                    <li>Reducción Pasiva: <span id="stat_rep"></span></li>
+                    <li>Reflejos: <span id="stat_ref"></span></li>
+                    <li>Voluntad: <span id="stat_vol"></span></li>
+                </ul>
+            </div>
+            <div id="armas_guardadas" class="panel-estadisticas" style="display:none; margin-top:16px;">
+                <h2>Armas Guardadas</h2>
+                <ul id="lista_armas"></ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        ["VIT","VEL","FUE","RES","REP","REF","VOL"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', function() {
+                    localStorage.setItem("ATRIB_" + id, this.value);
+                    window.dispatchEvent(new Event("storage"));
+                    mostrarAtributosEditables();
+                });
+
+                const guardado = localStorage.getItem("ATRIB_" + id);
+                if (guardado !== null) {
+                    el.value = guardado;
+                }
+            }
+        });
+
+        let armas = [];
+
+        if (localStorage.getItem("ARMAS")) {
+            try {
+                armas = JSON.parse(localStorage.getItem("ARMAS"));
+            } catch {}
+        }
+
+        document.getElementById('crear_arma').addEventListener('click', function() {
+            const nombre = document.getElementById('nombre_arma').value.trim();
+            const atq = document.getElementById('ATQ').value;
+            const def = document.getElementById('DEF').value;
+            const abrev = document.getElementById('abreviatura_arma').value.trim().toUpperCase();
+
+            if (!nombre || !abrev) {
+                alert("Debes ingresar el nombre y la abreviatura del arma.");
+                return;
+            }
+            if (abrev.length > 5) {
+                alert("La abreviatura debe tener máximo 5 caracteres.");
+                return;
+            }
+            if (armas.length >= 2) {
+                alert("Solo puedes guardar un máximo de dos armas.");
+                return;
+            }
+            armas.push({ nombre, atq, def, abrev });
+
+            localStorage.setItem("ARMAS", JSON.stringify(armas));
+            window.dispatchEvent(new Event("storage")); 
+            mostrarArmasGuardadas();
+            mostrarArmasEditables();
+        });
+
+        function mostrarArmasGuardadas() {
+            const lista = document.getElementById('lista_armas');
+            lista.innerHTML = '';
+            armas.forEach((arma, idx) => {
+                const li = document.createElement('li');
+                li.textContent = `${arma.abrev} - ${arma.nombre} | ATQ: ${arma.atq} | DEF: ${arma.def}`;
+                lista.appendChild(li);
+            });
+            document.getElementById('armas_guardadas').style.display = armas.length > 0 ? 'block' : 'none';
+        }
+
+        mostrarArmasGuardadas();
+
+        function mostrarArmasEditables() {
+            const cont = document.getElementById('armas_editables');
+            cont.innerHTML = '';
+            armas.forEach((arma, idx) => {
+                const div = document.createElement('div');
+                div.className = 'arma-editable';
+                div.innerHTML = `
+                    <input type="text" value="${arma.nombre}" data-idx="${idx}" class="edit-nombre" style="width:90px;">
+                    <input type="text" value="${arma.abrev}" data-idx="${idx}" class="edit-abrev" maxlength="5" style="width:60px;">
+                    <input type="number" value="${arma.atq}" data-idx="${idx}" class="edit-atq" style="width:60px;">
+                    <input type="number" value="${arma.def}" data-idx="${idx}" class="edit-def" style="width:60px;">
+                    <button class="btn-eliminar-arma" data-idx="${idx}">Eliminar</button>
+                `;
+                cont.appendChild(div);
+            });
+        }
+        mostrarArmasEditables();
+
+        document.getElementById('armas_editables').addEventListener('input', function(e) {
+            const idx = e.target.getAttribute('data-idx');
+            if (idx !== null) {
+                if (e.target.classList.contains('edit-nombre')) armas[idx].nombre = e.target.value;
+                if (e.target.classList.contains('edit-abrev')) armas[idx].abrev = e.target.value.toUpperCase();
+                if (e.target.classList.contains('edit-atq')) armas[idx].atq = e.target.value;
+                if (e.target.classList.contains('edit-def')) armas[idx].def = e.target.value;
+                localStorage.setItem("ARMAS", JSON.stringify(armas));
+                window.dispatchEvent(new Event("storage"));
+                mostrarArmasGuardadas();
+            }
+        });
+
+        document.getElementById('armas_editables').addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-eliminar-arma')) {
+                const idx = e.target.getAttribute('data-idx');
+                armas.splice(idx, 1);
+                localStorage.setItem("ARMAS", JSON.stringify(armas));
+                window.dispatchEvent(new Event("storage"));
+                mostrarArmasEditables();
+                mostrarArmasGuardadas();
+            }
+        });
+
+        document.getElementById('descargar_json').addEventListener('click', function() {
+            const data = {
+                atributos: {
+                    VIT: document.getElementById('VIT').value,
+                    VEL: document.getElementById('VEL').value,
+                    FUE: document.getElementById('FUE').value,
+                    RES: document.getElementById('RES').value,
+                    REP: document.getElementById('REP').value,
+                    REF: document.getElementById('REF').value,
+                    VOL: document.getElementById('VOL').value
+                },
+                armas: armas
+            };
+            const nombre = document.getElementById('nombre_archivo').value.trim() || "datos";
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nombre + ".json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('cargar_json').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const data = JSON.parse(evt.target.result);
+                    if (data.atributos) {
+                        document.getElementById('VIT').value = data.atributos.VIT || 0;
+                        document.getElementById('VEL').value = data.atributos.VEL || 0;
+                        document.getElementById('FUE').value = data.atributos.FUE || 0;
+                        document.getElementById('RES').value = data.atributos.RES || 0;
+                        document.getElementById('REP').value = data.atributos.REP || 0;
+                        document.getElementById('REF').value = data.atributos.REF || 0;
+                        document.getElementById('VOL').value = data.atributos.VOL || 0;
+                        ["VIT","VEL","FUE","RES","REP","REF","VOL"].forEach(id => {
+                            localStorage.setItem("ATRIB_" + id, document.getElementById(id).value);
+                        });
+                        window.dispatchEvent(new Event("storage"));
+                    }
+                    if (data.armas) {
+                        armas = data.armas.slice(0, 2);
+                        localStorage.setItem("ARMAS", JSON.stringify(armas));
+                        window.dispatchEvent(new Event("storage"));
+                        mostrarArmasGuardadas();
+                        mostrarArmasEditables();
+                    }
+                } catch (err) {
+                    alert("Archivo JSON inválido.");
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        document.getElementById('guardar_estadisticas').addEventListener('click', function() {
+            document.getElementById('estadisticas_guardadas').style.display = 'block';
+            document.getElementById('stat_vit').textContent = document.getElementById('VIT').value;
+            document.getElementById('stat_vel').textContent = document.getElementById('VEL').value;
+            document.getElementById('stat_fue').textContent = document.getElementById('FUE').value;
+            document.getElementById('stat_res').textContent = document.getElementById('RES').value;
+            document.getElementById('stat_rep').textContent = document.getElementById('REP').value;
+            document.getElementById('stat_ref').textContent = document.getElementById('REF').value;
+            document.getElementById('stat_vol').textContent = document.getElementById('VOL').value;
+        });
+
+        function mostrarAtributosEditables() {
+        }
+    </script>
+</body>
+</html>

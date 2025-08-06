@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CombateMHRPG</title>
+    <link rel="stylesheet" href="combat.css">
+</head>
+<body>
+<header>
+    <a class="logo-link">
+        <img src="logo.png" alt="Logo de la calculadora">
+    </a>
+    <nav>
+        <a class="nav-btn" href="index.html">Inicio</a>
+        <a class="nav-btn" href="combate.html">Combate</a>
+        <a class="nav-btn" href="comandos.html">Comandos</a>
+    </nav>
+</header>
+    <main class="combate-main">
+        <section class="panel-combate">
+            <div class="bandos-container">
+                
+                <div class="cuadro-bando cuadro-aliados">
+                    <h2>Aliados</h2>
+                    <table class="tabla-bando" id="tabla-aliados">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>VIT</th>
+                                <th>VEL</th>
+                                <th>PA</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="aliados-body">
+                            
+                        </tbody>
+                    </table>
+                    <button class="btn-agregar" id="agregar-aliado">+ Añadir aliado</button>
+                </div>
+                <div class="cuadro-bando cuadro-enemigos">
+                    <h2>Enemigos</h2>
+                    <table class="tabla-bando" id="tabla-enemigos">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>VIT</th>
+                                <th>VEL</th>
+                                <th>PA</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="enemigos-body">
+                        </tbody>
+                    </table>
+                    <button class="btn-agregar" id="agregar-enemigo">+ Añadir enemigo</button>
+                </div>
+            </div>
+            <div class="registro-combate-container">
+                <h2>Registro de combate</h2>
+                <form id="form-accion" class="form-accion">
+                    <div class="accion-row">
+                        <label for="accion-jugador">Quien actúa:</label>
+                        <select id="accion-jugador"></select>
+                    </div>
+                    <div class="accion-row">
+                        <label for="accion-comando">Comando:</label>
+                        <input type="text" id="accion-comando" maxlength="32" placeholder="Ej: Ataque, Defensa, Habilidad...">
+                    </div>
+                    <div class="accion-row">
+                        <label for="accion-pa">PA gastados:</label>
+                        <input type="number" id="accion-pa" min="0" max="8" value="1" style="width:60px;">
+                    </div>
+                    <div class="accion-row">
+                        <label for="accion-vel">VEL gastada:</label>
+                        <input type="number" id="accion-vel" min="0" max="99" value="0" style="width:60px;">
+                    </div>
+                    <div class="accion-row">
+                        <label for="accion-objetivo">Objetivo:</label>
+                        <select id="accion-objetivo"></select>
+                    </div>
+                    <div class="accion-row">
+                        <label for="accion-dano">Daño (positivo o negativo):</label>
+                        <input type="number" id="accion-dano" value="0" style="width:80px;">
+                    </div>
+                    <div class="accion-row">
+                        <label for="accion-desc">Extras:</label>
+                        <input type="text" id="accion-desc" maxlength="64" placeholder="Notas, efectos, etc.">
+                    </div>
+                    <button type="submit" class="btn-control" style="margin-top:10px;">Registrar</button>
+                </form>
+                <div class="registro-combate-lista">
+                    <table class="tabla-registro-combate">
+                        <thead>
+                            <tr>
+                                <th>Ronda</th>
+                                <th>Turno</th>
+                                <th>Jugador</th>
+                                <th>Comando</th>
+                                <th>PA</th>
+                                <th>VEL</th>
+                                <th>Daño</th>
+                                <th>Otros</th>
+                            </tr>
+                        </thead>
+                        <tbody id="registro-combate-body">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="controles-combate">
+                     <button id="btn-pasar-turno" class="btn-control btn-turno">PT</button>
+                     <button id="btn-pasar-ronda" class="btn-control btn-ronda">Ronda</button>
+                     <button id="btn-limpiar-historial" class="btn-control btn-limpiar">Limpiar</button>
+                </div>
+            </div>
+            <aside class="chat-notas">
+                <h2>Notas y habilidades pasivas</h2>
+                <div id="chat-mensajes" class="chat-mensajes"></div>
+                <form id="form-chat" autocomplete="off">
+                    <input type="text" id="input-chat" maxlength="120" placeholder="Escribe una nota o habilidad...">
+                    <button type="submit" class="btn-chat">Enviar</button>
+                </form>
+            </aside>
+        </section>
+    </main>
+    <script>
+
+        let aliados = [
+            { nombre: "Tú", vit: 1000, vel: 10, pa: 8 },
+        ];
+        let enemigos = [];
+        let acciones = [];
+        let chatMensajes = [];
+
+        function renderBando(bando, tbodyId, max, tipo) {
+            const tbody = document.getElementById(tbodyId);
+            tbody.innerHTML = "";
+            bando.forEach((p, idx) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td><input type="text" value="${p.nombre}" class="input-nombre" data-idx="${idx}" data-tipo="${tipo}" maxlength="20"></td>
+                    <td><input type="number" value="${p.vit}" class="input-vit" data-idx="${idx}" data-tipo="${tipo}" min="0" max="99999"></td>
+                    <td><input type="number" value="${p.vel}" class="input-vel" data-idx="${idx}" data-tipo="${tipo}" min="0" max="99"></td>
+                    <td><input type="number" value="${p.pa}" class="input-pa" data-idx="${idx}" data-tipo="${tipo}" min="0" max="8"></td>
+                    <td>
+                        ${idx > 0 || tipo === "enemigos" ? `<button class="btn-quitar" data-idx="${idx}" data-tipo="${tipo}">✖</button>` : ""}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderBandos() {
+            const selectJugador = document.getElementById("accion-jugador");
+            const selectObjetivo = document.getElementById("accion-objetivo");
+            const jugadorSel = selectJugador ? selectJugador.value : null;
+            const objetivoSel = selectObjetivo ? selectObjetivo.value : null;
+
+            renderBando(aliados, "aliados-body", 3, "aliados");
+            renderBando(enemigos, "enemigos-body", 3, "enemigos");
+            renderAccionSelects();
+
+            if (jugadorSel !== null) {
+                document.getElementById("accion-jugador").value = jugadorSel;
+            }
+            if (objetivoSel !== null) {
+                document.getElementById("accion-objetivo").value = objetivoSel;
+            }
+            guardarDatos();
+        }
+
+        function renderAccionSelects() {
+            const selectJugador = document.getElementById("accion-jugador");
+            const selectObjetivo = document.getElementById("accion-objetivo");
+            selectJugador.innerHTML = "";
+            selectObjetivo.innerHTML = "";
+
+            aliados.forEach((a, i) => {
+                const opt = document.createElement("option");
+                opt.value = "aliado-" + i;
+                opt.textContent = a.nombre + " (Aliado)";
+                selectJugador.appendChild(opt.cloneNode(true));
+                selectObjetivo.appendChild(opt);
+            });
+            enemigos.forEach((e, i) => {
+                const opt = document.createElement("option");
+                opt.value = "enemigo-" + i;
+                opt.textContent = e.nombre + " (Enemigo)";
+                selectJugador.appendChild(opt.cloneNode(true));
+                selectObjetivo.appendChild(opt);
+            });
+        }
+
+        document.getElementById("agregar-aliado").onclick = function() {
+            if (aliados.length < 3) {
+                aliados.push({ nombre: "Aliado " + aliados.length, vit: 1000, vel: 10, pa: 8 });
+                renderBandos();
+            }
+        };
+        document.getElementById("agregar-enemigo").onclick = function() {
+            if (enemigos.length < 3) {
+                enemigos.push({ nombre: "Enemigo " + (enemigos.length + 1), vit: 1000, vel: 10, pa: 8 });
+                renderBandos();
+            }
+        };
+
+        document.addEventListener("click", function(e) {
+            if (e.target.classList.contains("btn-quitar")) {
+                const idx = Number(e.target.getAttribute("data-idx"));
+                const tipo = e.target.getAttribute("data-tipo");
+                if (tipo === "aliados" && idx > 0) aliados.splice(idx, 1);
+                if (tipo === "enemigos") enemigos.splice(idx, 1);
+                renderBandos();
+            }
+        });
+
+        document.addEventListener("input", function(e) {
+            const idx = Number(e.target.getAttribute("data-idx"));
+            const tipo = e.target.getAttribute("data-tipo");
+            if (tipo && !isNaN(idx)) {
+                if (e.target.classList.contains("input-nombre")) {
+                    if (tipo === "aliados") aliados[idx].nombre = e.target.value;
+                    else enemigos[idx].nombre = e.target.value;
+                }
+                if (e.target.classList.contains("input-vit")) {
+                    if (tipo === "aliados") aliados[idx].vit = Number(e.target.value);
+                    else enemigos[idx].vit = Number(e.target.value);
+                }
+                if (e.target.classList.contains("input-vel")) {
+                    if (tipo === "aliados") aliados[idx].vel = Number(e.target.value);
+                    else enemigos[idx].vel = Number(e.target.value);
+                }
+                if (e.target.classList.contains("input-pa")) {
+                    if (tipo === "aliados") aliados[idx].pa = Number(e.target.value);
+                    else enemigos[idx].pa = Number(e.target.value);
+                }
+            }
+        });
+
+        let rondaActual = 1;
+        let turnoActual = 1;
+
+        function renderRegistroCombate() {
+            const tbody = document.getElementById("registro-combate-body");
+            if (!tbody) return;
+            if (acciones.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:#aaa;"><em>El registro de acciones aparecerá aquí.</em></td></tr>`;
+                return;
+            }
+            tbody.innerHTML = acciones.map((a, i) => `
+                <tr>
+                    <td>${a.ronda}</td>
+                    <td>${a.turno}</td>
+                    <td>${a.jugadorNombre}</td>
+                    <td>${a.comando || "-"}</td>
+                    <td>${a.pa}</td>
+                    <td>${a.vel}</td>
+                    <td style="color:${a.dano < 0 ? '#43a047' : (a.dano > 0 ? '#e62429' : '#fff')};font-weight:700;">
+                        ${a.dano > 0 ? "-" : (a.dano < 0 ? "+" : "")}${Math.abs(a.dano)}
+                        ${a.objetivoNombre ? ` <span style='color:#aaa;font-weight:400;'>&rarr; ${a.objetivoNombre}</span>` : ""}
+                    </td>
+                    <td>${a.descripcion || ""}</td>
+                </tr>
+            `).join("");
+        }
+
+        document.getElementById("form-accion").onsubmit = function(e) {
+            e.preventDefault();
+            const jugadorSel = document.getElementById("accion-jugador").value;
+            const objetivoSel = document.getElementById("accion-objetivo").value;
+            const comando = document.getElementById("accion-comando").value.trim();
+            const pa = Number(document.getElementById("accion-pa").value) || 0;
+            const vel = Number(document.getElementById("accion-vel").value) || 0;
+            const dano = Number(document.getElementById("accion-dano").value) || 0;
+            const descripcion = document.getElementById("accion-desc").value.trim();
+
+            let jugador, jugadorNombre = "", objetivo, objetivoNombre = "";
+            if (jugadorSel.startsWith("aliado-")) {
+                jugador = aliados[Number(jugadorSel.split("-")[1])];
+                jugadorNombre = jugador ? jugador.nombre : "";
+            } else if (jugadorSel.startsWith("enemigo-")) {
+                jugador = enemigos[Number(jugadorSel.split("-")[1])];
+                jugadorNombre = jugador ? jugador.nombre : "";
+            }
+            if (objetivoSel.startsWith("aliado-")) {
+                objetivo = aliados[Number(objetivoSel.split("-")[1])];
+                objetivoNombre = objetivo ? objetivo.nombre : "";
+            } else if (objetivoSel.startsWith("enemigo-")) {
+                objetivo = enemigos[Number(objetivoSel.split("-")[1])];
+                objetivoNombre = objetivo ? objetivo.nombre : "";
+            }
+
+            if (jugador && jugador.pa < pa) {
+                alert("El personaje seleccionado no tiene suficientes PA para realizar esta acción.");
+                return;
+            }
+
+            if (jugador) {
+                jugador.pa = Math.max(0, jugador.pa - pa);
+                jugador.vel = Math.max(0, jugador.vel - vel);
+            }
+
+            if (objetivo && dano !== 0) {
+                objetivo.vit = Math.max(0, objetivo.vit - dano);
+            }
+
+            acciones.push({
+                ronda: rondaActual,
+                turno: turnoActual,
+                jugadorNombre,
+                comando,
+                pa,
+                vel,
+                dano,
+                descripcion,
+                objetivoNombre
+            });
+
+            renderBandos();
+            renderRegistroCombate();
+
+            document.getElementById("accion-comando").value = "";
+            document.getElementById("accion-pa").value = 1;
+            document.getElementById("accion-vel").value = 0;
+            document.getElementById("accion-dano").value = 0;
+            document.getElementById("accion-desc").value = "";
+        };
+
+        document.getElementById("btn-pasar-turno").onclick = function() {
+            turnoActual++;
+        };
+        document.getElementById("btn-pasar-ronda").onclick = function() {
+            rondaActual++;
+            turnoActual = 1;
+            aliados.forEach(a => a.pa = 8);
+            enemigos.forEach(e => e.pa = 8);
+            renderBandos();
+        };
+
+        function guardarDatos() {
+            localStorage.setItem("combate_aliados", JSON.stringify(aliados));
+            localStorage.setItem("combate_enemigos", JSON.stringify(enemigos));
+            localStorage.setItem("combate_notas", JSON.stringify(chatMensajes));
+            localStorage.setItem("combate_acciones", JSON.stringify(acciones));
+            localStorage.setItem("combate_ronda", rondaActual);
+            localStorage.setItem("combate_turno", turnoActual);
+        }
+        function cargarDatos() {
+            const a = localStorage.getItem("combate_aliados");
+            const e = localStorage.getItem("combate_enemigos");
+            const n = localStorage.getItem("combate_notas");
+            const ac = localStorage.getItem("combate_acciones");
+            const r = localStorage.getItem("combate_ronda");
+            const t = localStorage.getItem("combate_turno");
+            if (a) aliados = JSON.parse(a);
+            if (e) enemigos = JSON.parse(e);
+            if (n) chatMensajes = JSON.parse(n);
+            if (ac) acciones = JSON.parse(ac);
+            if (r) rondaActual = Number(r);
+            if (t) turnoActual = Number(t);
+        }
+
+        function renderBandos() {
+            const selectJugador = document.getElementById("accion-jugador");
+            const selectObjetivo = document.getElementById("accion-objetivo");
+            const jugadorSel = selectJugador ? selectJugador.value : null;
+            const objetivoSel = selectObjetivo ? selectObjetivo.value : null;
+
+            renderBando(aliados, "aliados-body", 3, "aliados");
+            renderBando(enemigos, "enemigos-body", 3, "enemigos");
+            renderAccionSelects();
+
+            if (jugadorSel !== null) {
+                document.getElementById("accion-jugador").value = jugadorSel;
+            }
+            if (objetivoSel !== null) {
+                document.getElementById("accion-objetivo").value = objetivoSel;
+            }
+            guardarDatos();
+        }
+        function renderChat() {
+            const chatDiv = document.getElementById("chat-mensajes");
+            chatDiv.innerHTML = "";
+            chatMensajes.forEach((msg, idx) => {
+                const div = document.createElement("div");
+                div.className = "chat-msg";
+                div.innerHTML = `
+                    <span>${msg}</span>
+                    <button class="btn-borrar-msg" data-idx="${idx}">🗑️</button>
+                `;
+                chatDiv.appendChild(div);
+            });
+            guardarDatos();
+        }
+
+        document.getElementById("form-chat").onsubmit = function(e) {
+            e.preventDefault();
+            const input = document.getElementById("input-chat");
+            const texto = input.value.trim();
+            if (texto) {
+                chatMensajes.push(texto);
+                renderChat();
+                input.value = "";
+            }
+        };
+
+        document.addEventListener("click", function(e) {
+            if (e.target.classList.contains("btn-borrar-msg")) {
+                const idx = Number(e.target.getAttribute("data-idx"));
+                chatMensajes.splice(idx, 1);
+                renderChat();
+            }
+        });
+
+        document.getElementById("btn-limpiar-historial").onclick = function() {
+            if (confirm("¿Seguro que quieres limpiar el historial de acciones?")) {
+                acciones = [];
+                rondaActual = 1;
+                turnoActual = 1;
+                aliados.forEach(a => {
+                    a.vit = 1000; 
+                    a.pa = 8;
+                });
+                enemigos.forEach(e => {
+                    e.vit = 1000;
+                    e.pa = 8;
+                });
+                renderBandos();
+                renderRegistroCombate();
+            }
+        };
+
+        cargarDatos();
+        renderBandos();
+        renderRegistroCombate();
+        renderChat();
+    </script>
+</body>
+</html>

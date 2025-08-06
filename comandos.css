@@ -1,0 +1,298 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+body {
+    background: #181a20 url("fondo.png") no-repeat center center fixed;
+    background-size: cover;
+    color: #f5f6fa;
+    font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #23242a;
+    padding: 18px 40px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+
+.nav-btn {
+    display: inline-block;
+    background: linear-gradient(90deg, #e62429 0%, #b71c1c 100%);
+    color: #fff !important;
+    font-weight: 700;
+    border-radius: 18px;
+    padding: 10px 32px;
+    margin-right: 10px;
+    text-decoration: none;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 16px rgba(230,36,41,0.15);
+    transition: background 0.2s, color 0.2s, transform 0.2s, box-shadow 0.2s;
+    border: none;
+    cursor: pointer;
+}
+.nav-btn:last-child {
+    margin-right: 0;
+}
+.nav-btn:hover, .nav-btn.active {
+    background: linear-gradient(90deg, #b71c1c 0%, #e62429 100%);
+    color: #fff !important;
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 4px 18px rgba(230,36,41,0.18);
+}
+
+.logo-link img {
+    height: 48px;
+    width: auto;
+    display: block;
+}
+
+header nav {
+    display: flex;
+    gap: 18px;
+}
+
+.combate {
+    display: inline-block;
+    background: linear-gradient(90deg, #e62429 0%, #b71c1c 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 12px 32px;
+    border-radius: 18px;
+    border: none;
+    text-decoration: none;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 16px rgba(230,36,41,0.15);
+    transition: background 0.2s, transform 0.2s;
+    cursor: pointer;
+}
+
+.combate:hover {
+    background: linear-gradient(90deg, #b71c1c 0%, #e62429 100%);
+    transform: translateY(-2px) scale(1.04);
+}
+
+.comandos-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin-top: 40px;
+    padding: 32px 0;
+    width: 100%;
+}
+
+.registro-habilidad {
+    background: #181a1f;
+    border-radius: 12px;
+    box-shadow: 0 8px 36px rgba(0,0,0,0.22);
+    border: 2.5px solid #000;
+    max-width: 900px;
+    min-width: 260px;
+    padding: 32px 28px 24px 28px;
+    margin: 0 auto 0 auto;
+    transition: box-shadow 0.2s, background 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.espaciador {
+    height: 36px;
+    width: 100%;
+}
+
+.registro-habilidad h1 {
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    letter-spacing: 2px;
+    color: #e62429;
+}
+
+.form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.form-row label {
+    min-width: 90px;
+    font-weight: 600;
+    color: #f5f6fa;
+    font-size: 0.97rem;
+}
+
+.form-row input,
+.form-row select {
+    flex: 1;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #35363c;
+    background: #1a1b20;
+    color: #f5f6fa;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.2s;
+}
+
+.form-row input:focus,
+.form-row select:focus {
+    border: 1.5px solid #e62429;
+}
+
+.btn-registrar {
+    width: 100%;
+    background: linear-gradient(90deg, #e62429 0%, #b71c1c 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 10px 0;
+    border-radius: 18px;
+    border: none;
+    margin-top: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    box-shadow: 0 2px 12px rgba(230,36,41,0.10);
+    transition: background 0.2s, transform 0.2s;
+}
+
+.btn-registrar:hover {
+    background: linear-gradient(90deg, #b71c1c 0%, #e62429 100%);
+    transform: translateY(-2px) scale(1.04);
+}
+
+.cuadros-habilidades {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    align-items: stretch;
+    box-sizing: border-box;
+}
+
+.cuadro-habilidad {
+    background: #181a20;
+    border-radius: 12px;
+    box-shadow: 0 8px 36px rgba(0,0,0,0.22);
+    border: 2.5px solid #000;
+    padding: 32px 28px 24px 28px;
+    margin: 0 auto;
+    min-height: 120px;
+    font-size: 1.15rem;
+    width: 100%;
+    max-width: 900px;
+    transition: box-shadow 0.2s, background 0.2s;
+    box-sizing: border-box;
+    overflow-x: auto;
+}
+
+.cuadro-habilidad h2 {
+    color: #e62429;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+.cuadro-habilidad ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.cuadro-habilidad li {
+    margin-bottom: 18px;
+    border-bottom: 1px solid #23242a;
+    padding-bottom: 10px;
+    font-size: 0.93rem;
+    word-break: break-word;
+    white-space: normal;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.cuadro-habilidad li:last-child {
+    border-bottom: none;
+}
+
+.cuadro-habilidad strong {
+    color: #e62429;
+    font-size: 1.1em;
+}
+
+.comando-linea {
+    font-size: 0.93rem;
+    word-break: break-word;
+    white-space: normal;
+    flex: 1 1 220px;
+    min-width: 0;
+}
+
+.btn-editar,
+.btn-eliminar,
+.btn-copiar {
+    background: linear-gradient(90deg, #35363c 0%, #23242a 100%);
+    color: #fff;
+    border: 1px solid #000;
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin-left: 6px;
+    font-size: 0.90rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    height: 28px;
+}
+
+.btn-editar:hover {
+    background: linear-gradient(90deg, #1976d2 0%, #1565c0 100%);
+    color: #fff;
+    transform: translateY(-2px) scale(1.04);
+}
+
+.btn-eliminar:hover {
+    background: linear-gradient(90deg, #e62429 0%, #b71c1c 100%);
+    color: #fff;
+    transform: translateY(-2px) scale(1.04);
+}
+
+.btn-copiar:hover {
+    background: linear-gradient(90deg, #43a047 0%, #388e3c 100%);
+    color: #fff;
+    transform: translateY(-2px) scale(1.04);
+}
+
+.registro-habilidad.cuadro-habilidad {
+    max-width: 900px;
+    width: 100%;
+    border: 2.5px solid #000;
+    box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+    .cuadros-habilidades, .cuadro-habilidad, .registro-habilidad.cuadro-habilidad {
+        max-width: 98vw;
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+}
+
+#acciones_habilidad {
+    margin-left: 8px;
+}

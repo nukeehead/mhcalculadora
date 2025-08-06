@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComandosMHRPG</title>
+    <link rel="stylesheet" href="comandos.css">
+</head>
+<body>
+<header>
+    <a class="logo-link">
+        <img src="logo.png" alt="Logo de la calculadora">
+    </a>
+    <nav>
+        <a class="nav-btn" href="index.html">Inicio</a>
+        <a class="nav-btn" href="combate.html">Combate</a>
+        <a class="nav-btn" href="comandos.html">Comandos</a>
+    </nav>
+</header>
+    <main class="comandos-main">
+        <section class="registro-habilidad cuadro-habilidad">
+            <h1>Registrar Habilidad</h1>
+            <form id="form_habilidad" autocomplete="off">
+                <div class="form-row">
+                    <label for="nombre_habilidad">Nombre:</label>
+                    <input type="text" id="nombre_habilidad" maxlength="32">
+                </div>
+                <div class="form-row">
+                    <label for="tipo_habilidad">Tipo:</label>
+                    <select id="tipo_habilidad">
+                        <option value="ofensivo">Ofensivo</option>
+                        <option value="defensivo">Defensivo</option>
+                        <option value="suplementario">Suplementario</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="tier_habilidad">TIER:</label>
+                    <select id="tier_habilidad">
+                        <option value="IV">IV</option>
+                        <option value="III">III</option>
+                        <option value="II">II</option>
+                        <option value="I">I</option>
+                        <option value="0">0</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="pa_habilidad">PA:</label>
+                    <input type="number" id="pa_habilidad" min="0" max="8">
+                </div>
+                <div class="form-row">
+                    <label for="alcance_habilidad">Alcance:</label>
+                    <input type="text" id="alcance_habilidad" maxlength="32" placeholder="Ej: 3 / 'Enemigo'">
+                </div>
+                <div class="form-row" id="valor_row">
+                    <label for="valor_base">Valor base:</label>
+                    <select id="valor_base">
+                        <option value="">- Selecciona -</option>
+                        <option value="FUE">FUE</option>
+                        <option value="otro">Otro (numérico)</option>
+                    </select>
+                    <input type="number" id="valor_otro" placeholder="Valor" style="display:none; width:80px;">
+                    <span>x</span>
+                    <input type="number" id="multiplo" step="0.01" min="0" value="1" style="width:60px;">
+                </div>
+                <div id="resultado_valor" style="margin-bottom:10px; color:#e62429; font-weight:bold;"></div>
+                <div class="form-row">
+                    <label for="indirecto_tipo">Indirecto:</label>
+                    <input type="text" id="indirecto_tipo" maxlength="32" placeholder="Tipo de indirecto">
+                    <input type="number" id="indirecto_porcentaje" min="0" max="1" step="0.01" placeholder="0.5">
+                    <input type="number" id="indirecto_acciones" min="1" step="1" placeholder="Acciones" style="width:80px;">
+                </div>
+                <div class="form-row">
+                    <label for="anotaciones_habilidad">Anotaciones:</label>
+                    <input type="text" id="anotaciones_habilidad" maxlength="64" placeholder="Ej: Causa quemadura">
+                </div>
+                <div class="form-row">
+                    <label for="cd_habilidad">Cooldown:</label>
+                    <input type="text" id="cd_habilidad" maxlength="32" placeholder="Turnos o texto">
+                </div>
+                <button type="submit" class="btn-registrar">Registrar Habilidad</button>
+            </form>
+        </section>
+        <div class="espaciador"></div>
+        <section class="cuadros-habilidades">
+            <div class="cuadro-habilidad" id="cuadro-ofensivo">
+                <h2>Ofensivas</h2>
+                <ul id="lista_ofensivo"></ul>
+            </div>
+            <div class="cuadro-habilidad" id="cuadro-defensivo">
+                <h2>Defensivas</h2>
+                <ul id="lista_defensivo"></ul>
+            </div>
+            <div class="cuadro-habilidad" id="cuadro-suplementario">
+                <h2>Suplementarias</h2>
+                <ul id="lista_suplementario"></ul>
+            </div>
+        </section>
+    </main>
+    <script>
+        const STORAGE_KEY = "HABILIDADES_MHRPG";
+
+        function guardarHabilidadesLocal() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(habilidades));
+            window.dispatchEvent(new Event("storage"));
+        }
+        function cargarHabilidadesLocal() {
+            if (localStorage.getItem(STORAGE_KEY)) {
+                try {
+                    habilidades = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+                } catch { habilidades = []; }
+            }
+        }
+
+        function getAtributos() {
+            const ids = ["FUE"];
+            let atributos = {};
+            ids.forEach(id => {
+                atributos[id] = Number(localStorage.getItem("ATRIB_" + id) || 0);
+            });
+            return atributos;
+        }
+        function getArmas() {
+            let armas = [];
+            if (localStorage.getItem("ARMAS")) {
+                try {
+                    armas = JSON.parse(localStorage.getItem("ARMAS"));
+                } catch {}
+            }
+            return armas || [];
+        }
+        function actualizarOpcionesArmas() {
+            const select = document.getElementById('valor_base');
+            Array.from(select.options).forEach(opt => {
+                if (opt.classList && opt.classList.contains('arma-opcion')) select.removeChild(opt);
+            });
+            const armas = getArmas();
+            armas.forEach(arma => {
+                const opt = document.createElement('option');
+                opt.value = "arma_" + arma.abrev;
+                opt.textContent = arma.abrev + " (Arma)";
+                opt.classList.add('arma-opcion');
+                select.insertBefore(opt, select.querySelector('option[value="otro"]'));
+            });
+        }
+        document.getElementById('valor_base').addEventListener('change', function() {
+            const valorOtro = document.getElementById('valor_otro');
+            if (this.value === 'otro') {
+                valorOtro.style.display = 'inline-block';
+            } else {
+                valorOtro.style.display = 'none';
+                valorOtro.value = '';
+            }
+            calcularValor();
+        });
+        document.getElementById('valor_otro').addEventListener('input', calcularValor);
+        document.getElementById('multiplo').addEventListener('input', calcularValor);
+        document.getElementById('valor_base').addEventListener('input', calcularValor);
+
+        function roundUpIfHalf(num) {
+            const n = Number(num);
+            if (isNaN(n)) return 0;
+            const floored = Math.floor(n);
+            if (n - floored === 0.5) return floored + 1;
+            return Math.round(n);
+        }
+
+        function calcularValor() {
+            const atributos = getAtributos();
+            const armas = getArmas();
+            const base = document.getElementById('valor_base').value;
+            const multiplo = parseFloat(document.getElementById('multiplo').value) || 0;
+            let baseValor = 0;
+            let texto = "";
+            if (base === "") {
+                texto = "";
+            } else if (base === "FUE") {
+                baseValor = atributos["FUE"] || 0;
+                texto = `-${roundUpIfHalf(baseValor * multiplo)}`;
+            } else if (base.startsWith("arma_")) {
+                const abrev = base.replace("arma_","");
+                const arma = armas.find(a => a.abrev === abrev);
+                if (arma) {
+                    baseValor = Number(arma.atq) || 0;
+                    texto = `-${roundUpIfHalf(baseValor * multiplo)}`;
+                } else {
+                    texto = "Arma no encontrada";
+                }
+            } else if (base === "otro") {
+                baseValor = parseFloat(document.getElementById('valor_otro').value) || 0;
+                texto = `-${roundUpIfHalf(baseValor * multiplo)}`;
+            }
+            document.getElementById('resultado_valor').innerHTML = texto;
+        }
+
+        document.getElementById('valor_base').addEventListener('change', calcularValor);
+        document.getElementById('valor_otro').addEventListener('input', calcularValor);
+        document.getElementById('multiplo').addEventListener('input', calcularValor);
+
+        actualizarOpcionesArmas();
+        window.addEventListener('focus', actualizarOpcionesArmas);
+
+        window.addEventListener('storage', () => {
+            actualizarOpcionesArmas();
+            calcularValor();
+            cargarHabilidadesLocal();
+            renderHabilidades();
+        });
+
+        let habilidades = [];
+        cargarHabilidadesLocal();
+
+        document.getElementById('form_habilidad').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const atributos = getAtributos();
+            const armas = getArmas();
+            const base = document.getElementById('valor_base').value;
+            let baseValor = 0;
+            let baseLabel = "";
+            if (base === "FUE") {
+                baseValor = atributos["FUE"] || 0;
+                baseLabel = base;
+            } else if (base.startsWith("arma_")) {
+                const abrev = base.replace("arma_","");
+                const arma = armas.find(a => a.abrev === abrev);
+                baseValor = arma ? Number(arma.atq) : 0;
+                baseLabel = arma ? arma.abrev : "";
+            } else if (base === "otro") {
+                baseValor = parseFloat(document.getElementById('valor_otro').value) || 0;
+                baseLabel = "Otro";
+            }
+            const multiplo = parseFloat(document.getElementById('multiplo').value) || 0;
+            const valorFinal = roundUpIfHalf(baseValor * multiplo);
+
+            const indirectoTipo = document.getElementById('indirecto_tipo').value.trim();
+            const indirectoPorcentaje = parseFloat(document.getElementById('indirecto_porcentaje').value) || 0;
+            const indirectoAcciones = document.getElementById('indirecto_acciones').value || "";
+
+            let indirectoValor = "";
+            if (indirectoTipo && indirectoPorcentaje > 0) {
+                indirectoValor = roundUpIfHalf(valorFinal * indirectoPorcentaje);
+            }
+
+            const habilidad = {
+                nombre: document.getElementById('nombre_habilidad').value.trim(),
+                tipo: document.getElementById('tipo_habilidad').value,
+                tier: document.getElementById('tier_habilidad').value,
+                pa: document.getElementById('pa_habilidad').value,
+                alcance: document.getElementById('alcance_habilidad').value,
+                valor_base: baseLabel,
+                valor_num: baseValor,
+                multiplo: multiplo,
+                valor_final: valorFinal,
+                indirecto_tipo: indirectoTipo,
+                indirecto_porcentaje: indirectoPorcentaje,
+                indirecto_acciones: indirectoAcciones,
+                indirecto_valor: indirectoValor,
+                anotaciones: document.getElementById('anotaciones_habilidad').value.trim(),
+                cd: document.getElementById('cd_habilidad').value
+            };
+            habilidades.push(habilidad);
+            guardarHabilidadesLocal();
+            renderHabilidades();
+            this.reset();
+            document.getElementById('valor_otro').style.display = 'none';
+            document.getElementById('resultado_valor').innerHTML = '';
+        });
+
+        function renderHabilidades() {
+            ['ofensivo', 'defensivo', 'suplementario'].forEach(tipo => {
+                const ul = document.getElementById('lista_' + tipo);
+                ul.innerHTML = '';
+                habilidades
+                    .map((h, idx) => ({ ...h, idx }))
+                    .filter(h => h.tipo === tipo)
+                    .forEach((h) => {
+                        let linea = '';
+                        if (h.nombre) linea += `<strong>${h.nombre}</strong>`;
+                        if (h.tier) linea += ` (TIER ${h.tier})`;
+                        if (h.pa) linea += ` (${h.pa} PA)`;
+                        if (h.valor_final) linea += ` -${h.valor_final}`;
+                        if (h.indirecto_tipo && h.indirecto_valor && h.indirecto_acciones) {
+                            linea += ` / ${h.indirecto_tipo} -${h.indirecto_valor} durante ${h.indirecto_acciones} acciones`;
+                        }
+                        if (h.alcance) linea += ` / Alcance: ${h.alcance}`;
+                        if (h.anotaciones) linea += ` / ${h.anotaciones}`;
+                        if (h.cd) linea += ` / CD: ${h.cd}`;
+
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <span class="comando-linea">
+                            ${linea}
+                            </span>
+                            <button class="btn-editar" data-idx="${h.idx}">✏️ Editar</button>
+                            <button class="btn-eliminar" data-idx="${h.idx}">🗑️ Eliminar</button>
+                            <button class="btn-copiar" data-idx="${h.idx}">📋 Copiar</button>
+                        `;
+                        ul.appendChild(li);
+                    });
+            });
+        }
+
+        document.querySelector('.cuadros-habilidades').addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-eliminar')) {
+                const idx = Number(e.target.getAttribute('data-idx'));
+                if (!isNaN(idx)) {
+                    habilidades.splice(idx, 1);
+                    guardarHabilidadesLocal();
+                    renderHabilidades();
+                }
+            }
+            if (e.target.classList.contains('btn-editar')) {
+                const idx = Number(e.target.getAttribute('data-idx'));
+                if (!isNaN(idx)) {
+                    cargarEdicion(idx);
+                }
+            }
+            if (e.target.classList.contains('btn-copiar')) {
+                const idx = Number(e.target.getAttribute('data-idx'));
+                if (!isNaN(idx)) {
+                    const h = habilidades[idx];
+                    let texto = '';
+                    if (h.nombre) texto += `${h.nombre}`;
+                    if (h.tier) texto += ` (TIER ${h.tier})`;
+                    if (h.pa) texto += ` (${h.pa} PA)`;
+                    if (h.valor_final) texto += ` -${h.valor_final}`;
+                    if (h.indirecto_tipo && h.indirecto_valor && h.indirecto_acciones) {
+                        texto += ` / ${h.indirecto_tipo} -${h.indirecto_valor} durante ${h.indirecto_acciones} acciones`;
+                    }
+                    if (h.alcance) texto += ` / Alcance: ${h.alcance}`;
+                    if (h.anotaciones) texto += ` / ${h.anotaciones}`;
+                    if (h.cd) texto += ` / CD: ${h.cd}`;
+                    navigator.clipboard.writeText(texto);
+                }
+            }
+        });
+
+        function cargarEdicion(idx) {
+            const h = habilidades[idx];
+            document.getElementById('nombre_habilidad').value = h.nombre || '';
+            document.getElementById('tipo_habilidad').value = h.tipo || '';
+            document.getElementById('tier_habilidad').value = h.tier || '';
+            document.getElementById('pa_habilidad').value = h.pa || '';
+            document.getElementById('alcance_habilidad').value = h.alcance || '';
+
+            let valorBase = h.valor_base;
+            if (valorBase === "FUE") {
+                document.getElementById('valor_base').value = valorBase;
+                document.getElementById('valor_otro').style.display = 'none';
+            } else if (getArmas().some(a => a.abrev === valorBase)) {
+                document.getElementById('valor_base').value = "arma_" + valorBase;
+                document.getElementById('valor_otro').style.display = 'none';
+            } else if (valorBase === "Otro") {
+                document.getElementById('valor_base').value = "otro";
+                document.getElementById('valor_otro').style.display = 'inline-block';
+                document.getElementById('valor_otro').value = h.valor_num;
+            } else {
+                document.getElementById('valor_base').value = "";
+                document.getElementById('valor_otro').style.display = 'none';
+            }
+            document.getElementById('multiplo').value = h.multiplo || '';
+
+            document.getElementById('indirecto_tipo').value = h.indirecto_tipo || '';
+            document.getElementById('indirecto_porcentaje').value = h.indirecto_porcentaje || '';
+            document.getElementById('indirecto_acciones').value = h.indirecto_acciones || '';
+
+            document.getElementById('anotaciones_habilidad').value = h.anotaciones || '';
+            document.getElementById('cd_habilidad').value = h.cd || '';
+            calcularValor();
+            habilidades.splice(idx, 1);
+            guardarHabilidadesLocal();
+            renderHabilidades();
+        }
+
+        window.addEventListener("guardar_json", function(e) {
+            if (!e.detail) return;
+            e.detail.habilidades = habilidades;
+            const nombre = e.detail.nombre_archivo || "datos";
+            const blob = new Blob([JSON.stringify(e.detail, null, 2)], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nombre + ".json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        window.addEventListener("cargar_json", function(e) {
+            if (!e.detail) return;
+            if (e.detail.habilidades) {
+                habilidades = e.detail.habilidades;
+                guardarHabilidadesLocal();
+                renderHabilidades();
+            }
+        });
+
+        renderHabilidades();
+    </script>
+</body>
+</html>
