@@ -21,105 +21,118 @@
     <section class="panel-combate">
 
         <div class="columna-izquierda">
-            <div class="accion-container">
-                <form id="form-ofensiva" class="form-accion form-accion-dos-col">
-                    <div class="accion-grid">
-                        <div class="accion-row">
-                            <label for="accion-jugador">Quien ataca:</label>
-                            <select id="accion-jugador"></select>
-                        </div>
-                        <div class="accion-row">
-                            <label for="accion-habilidad-of">Habilidad (nombre):</label>
-                            <input type="text" id="accion-habilidad-of" maxlength="32" placeholder="Nombre de la habilidad">
-                        </div>
-                        <div class="accion-row">
-                            <label for="accion-dano">Daño:</label>
-                            <input type="number" id="accion-dano" value="0" style="width:80px;">
-                        </div>
-                        <div class="accion-row">
-                            <label for="accion-pa">PA gastados:</label>
-                            <input type="number" id="accion-pa" min="0" max="8" value="1" style="width:60px;">
-                        </div>
-                        <div class="accion-row">
-                            <label for="accion-vel">VEL gastada:</label>
-                            <input type="number" id="accion-vel" min="0" max="99" value="0" style="width:60px;">
-                        </div>
-                        <div class="accion-row">
-                            <label for="accion-objetivo">Objetivo:</label>
-                            <select id="accion-objetivo"></select>
-                        </div>
-                    </div>
-                    <div class="accion-row accion-row-full">
-                        <label for="accion-extra">Extras:</label>
-                        <input type="text" id="accion-extra" maxlength="64" placeholder="Notas, efectos, etc.">
-                    </div>
-                    <div class="accion-row accion-row-full">
-                        <button type="submit" class="btn-control" style="margin-top:10px;width:100%;">Registrar ofensiva</button>
-                    </div>
+
+            <div class="mini-calc-container">
+                <h2>Mini Calculadora</h2>
+                <form id="form-mini-calc" autocomplete="off" style="margin-bottom:8px;">
+                    <input type="text" id="input-mini-calc" maxlength="64" placeholder="Ej: (FUE*1.5)+AGI/2" style="width:80%;font-size:1.05rem;">
+                    <button type="submit" class="btn-control" style="width:100%;">Calcular</button>
+                    <button type="button" id="btn-limpiar-calc" class="btn-limpiar-calc">Limpiar</button>
                 </form>
-            </div>
-            <div class="accion-container">
-                <form id="form-defensiva" class="form-accion form-accion-dos-col">
-                    <div class="accion-grid">
-                        <div class="accion-row">
-                            <label for="accion-defensor">Quien recibe:</label>
-                            <select id="accion-defensor"></select>
-                        </div>
-                        <div class="accion-row">
-                            <label for="accion-habilidad-def">Habilidad defensiva (nombre):</label>
-                            <input type="text" id="accion-habilidad-def" maxlength="32" placeholder="Nombre de la defensa">
-                        </div>
-                        <div class="accion-row">
-                            <label for="accion-defensa">Defensa (solo para ti):</label>
-                            <input type="number" id="accion-defensa" value="" style="width:80px;" placeholder="Defensa usada">
-                        </div>
-                        <div class="accion-row">
-                            <label for="accion-dano-real">Lo que recibe:</label>
-                            <input type="number" id="accion-dano-real" value="" style="width:80px;" placeholder="Daño recibido">
-                        </div>
-                        <div class="accion-row">
-                            <label for="accion-pa-defensa">PA gastados:</label>
-                            <input type="number" id="accion-pa-defensa" min="0" max="8" value="0" style="width:60px;">
-                        </div>
-                        <div class="accion-row">
-                            <label for="accion-vel-defensa">VEL gastada:</label>
-                            <input type="number" id="accion-vel-defensa" min="0" max="99" value="0" style="width:60px;">
-                        </div>
-                    </div>
-                    <div class="accion-row accion-row-full">
-                        <label for="accion-desc">Extras:</label>
-                        <input type="text" id="accion-desc" maxlength="64" placeholder="Notas, efectos, etc.">
-                    </div>
-                    <div class="accion-row accion-row-full">
-                        <button type="submit" class="btn-control" style="margin-top:10px;width:100%;">Registrar defensiva</button>
-                    </div>
-                </form>
-            </div>
-            <div class="registro-combate-container">
-                <div class="registro-combate-lista">
-                    <table class="tabla-registro-combate">
-                        <thead>
-                            <tr>
-                                <th>Ronda</th>
-                                <th>Turno</th>
-                                <th>Tipo</th>
-                                <th>Quien</th>
-                                <th>Habilidad</th>
-                                <th>PA</th>
-                                <th>VEL</th>
-                                <th>Daño/Defensa</th>
-                                <th>Objetivo/Recibe</th>
-                                <th>Extras</th>
-                            </tr>
-                        </thead>
-                        <tbody id="registro-combate-body">
-                        </tbody>
-                    </table>
+                <div id="mini-calc-resultado" style="margin-bottom:8px;color:#e62429;font-weight:bold;"></div>
+                <div class="mini-calc-historial">
+                    <h3 style="margin:4px 0 2px 0;font-size:0.98rem;color:#fff;">Historial</h3>
+                    <ul id="mini-calc-historial-list" style="list-style:none;padding-left:0;margin:0;"></ul>
                 </div>
-                <div class="controles-combate">
-                     <button id="btn-pasar-turno" class="btn-control btn-turno">PT</button>
-                     <button id="btn-pasar-ronda" class="btn-control btn-ronda">Ronda</button>
-                     <button id="btn-limpiar-historial" class="btn-control btn-limpiar">Limpiar</button>
+            </div>
+
+            <div class="cuadros-centro">
+                <div class="accion-container">
+                    <form id="form-ofensiva" class="form-accion form-accion-dos-col">
+                        <div class="accion-grid">
+                            <div class="accion-row">
+                                <label for="accion-jugador">Quien ataca:</label>
+                                <select id="accion-jugador"></select>
+                            </div>
+                            <div class="accion-row">
+                                <label for="accion-habilidad-of">Habilidad (nombre):</label>
+                                <input type="text" id="accion-habilidad-of" maxlength="32" placeholder="Nombre de la habilidad">
+                            </div>
+                            <div class="accion-row">
+                                <label for="accion-dano">Daño:</label>
+                                <input type="number" id="accion-dano" value="0" style="width:80px;">
+                            </div>
+                            <div class="accion-row">
+                                <label for="accion-pa">PA gastados:</label>
+                                <input type="number" id="accion-pa" min="0" max="8" value="1" style="width:60px;">
+                            </div>
+                            <div class="accion-row">
+                                <label for="accion-vel">VEL gastada:</label>
+                                <input type="number" id="accion-vel" min="0" max="99" value="0" style="width:60px;">
+                            </div>
+                            <div class="accion-row">
+                                <label for="accion-objetivo">Objetivo:</label>
+                                <select id="accion-objetivo"></select>
+                            </div>
+                        </div>
+                        <div class="accion-row accion-row-full">
+                            <label for="accion-extra">Extras:</label>
+                            <input type="text" id="accion-extra" maxlength="64" placeholder="Notas, efectos, etc.">
+                        </div>
+                        <div class="accion-row accion-row-full">
+                            <button type="submit" class="btn-control" style="margin-top:10px;width:100%;">Registrar ofensiva</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="accion-container">
+                    <form id="form-defensiva" class="form-accion form-accion-dos-col">
+                        <div class="accion-grid">
+                            <div class="accion-row">
+                                <label for="accion-defensor">Quien recibe:</label>
+                                <select id="accion-defensor"></select>
+                            </div>
+                            <div class="accion-row">
+                                <label for="accion-habilidad-def">Habilidad defensiva (nombre):</label>
+                                <input type="text" id="accion-habilidad-def" maxlength="32" placeholder="Nombre de la defensa">
+                            </div>
+                            <div class="accion-row">
+                                <label for="accion-defensa">Defensa (solo para ti):</label>
+                                <input type="number" id="accion-defensa" value="" style="width:80px;" placeholder="Defensa usada">
+                            </div>
+                            <div class="accion-row">
+                                <label for="accion-pa-defensa">PA gastados:</label>
+                                <input type="number" id="accion-pa-defensa" min="0" max="8" value="0" style="width:60px;">
+                            </div>
+                            <div class="accion-row">
+                                <label for="accion-vel-defensa">VEL gastada:</label>
+                                <input type="number" id="accion-vel-defensa" min="0" max="99" value="0" style="width:60px;">
+                            </div>
+                        </div>
+                        <div class="accion-row accion-row-full">
+                            <label for="accion-desc">Extras:</label>
+                            <input type="text" id="accion-desc" maxlength="64" placeholder="Notas, efectos, etc.">
+                        </div>
+                        <div class="accion-row accion-row-full">
+                            <button type="submit" class="btn-control" style="margin-top:10px;width:100%;">Registrar defensiva</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="registro-combate-container">
+                    <div class="registro-combate-lista">
+                        <table class="tabla-registro-combate">
+                            <thead>
+                                <tr>
+                                    <th>Ronda</th>
+                                    <th>Turno</th>
+                                    <th>Tipo</th>
+                                    <th>Quien</th>
+                                    <th>Habilidad</th>
+                                    <th>PA</th>
+                                    <th>VEL</th>
+                                    <th>Daño/Defensa</th>
+                                    <th>Objetivo</th>
+                                    <th>Extras</th>
+                                </tr>
+                            </thead>
+                            <tbody id="registro-combate-body">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="controles-combate">
+                         <button id="btn-pasar-turno" class="btn-control btn-turno">PT</button>
+                         <button id="btn-pasar-ronda" class="btn-control btn-ronda">Ronda</button>
+                         <button id="btn-limpiar-historial" class="btn-control btn-limpiar">Limpiar</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -175,6 +188,92 @@
     let enemigos = [];
     let acciones = [];
     let chatMensajes = [];
+
+
+    function obtenerAtributosYArmas() {
+        const atributos = {};
+        ["VIT","VEL","FUE","RES","REP","REF","VOL"].forEach(attr => {
+            atributos[attr] = Number(localStorage.getItem("ATRIB_" + attr)) || 0;
+        });
+
+        let armas = [];
+        try {
+            armas = JSON.parse(localStorage.getItem("ARMAS")) || [];
+        } catch {}
+        armas.forEach((arma, idx) => {
+            if (arma.abrev) atributos[arma.abrev] = Number(arma.atq) || 0;
+            if (arma.abrev) atributos[arma.abrev + "D"] = Number(arma.def) || 0; 
+            if (arma.nombre) atributos[arma.nombre.replace(/\s+/g, "_").toUpperCase()] = Number(arma.atq) || 0;
+            atributos["ARMA" + (idx+1) + "_ATQ"] = Number(arma.atq) || 0;
+            atributos["ARMA" + (idx+1) + "_DEF"] = Number(arma.def) || 0;
+        });
+
+        if (window.aliados && aliados.length > 0) {
+            aliados.forEach((a, i) => {
+                atributos["ALIADO" + (i+1) + "_VIT"] = Number(a.vit) || 0;
+                atributos["ALIADO" + (i+1) + "_VEL"] = Number(a.vel) || 0;
+                atributos["ALIADO" + (i+1) + "_PA"] = Number(a.pa) || 0;
+            });
+        }
+        if (window.enemigos && enemigos.length > 0) {
+            enemigos.forEach((e, i) => {
+                atributos["ENEMIGO" + (i+1) + "_VIT"] = Number(e.vit) || 0;
+                atributos["ENEMIGO" + (i+1) + "_VEL"] = Number(e.vel) || 0;
+                atributos["ENEMIGO" + (i+1) + "_PA"] = Number(e.pa) || 0;
+            });
+        }
+        return atributos;
+    }
+
+    let miniCalcHistorial = [];
+    function cargarMiniCalcHistorial() {
+        const hist = localStorage.getItem("miniCalcHistorial");
+        if (hist) {
+            try {
+                miniCalcHistorial = JSON.parse(hist);
+            } catch {
+                miniCalcHistorial = [];
+            }
+        }
+    }
+    cargarMiniCalcHistorial();
+
+    function evalMiniCalc(expr) {
+        expr = expr.replace(/\[/g, "(").replace(/\]/g, ")");
+        const atributos = obtenerAtributosYArmas();
+        Object.keys(atributos).forEach(attr => {
+            const reg = new RegExp(`\\b${attr}\\b`, "g");
+            expr = expr.replace(reg, atributos[attr]);
+        });
+        if (!/^[\d\.\+\-\*\/\(\)\s]+$/.test(expr)) return "Expresión inválida";
+        try {
+            let resultado = eval(expr);
+            return resultado;
+        } catch {
+            return "Error de cálculo";
+        }
+    }
+
+    document.getElementById("form-mini-calc").onsubmit = function(e) {
+        e.preventDefault();
+        const input = document.getElementById("input-mini-calc");
+        const expr = input.value.trim();
+        if (!expr) return;
+        const resultado = evalMiniCalc(expr);
+        document.getElementById("mini-calc-resultado").textContent = `Resultado: ${resultado}`;
+        miniCalcHistorial.unshift({ expr, resultado });
+        if (miniCalcHistorial.length > 10) miniCalcHistorial.pop();
+        localStorage.setItem("miniCalcHistorial", JSON.stringify(miniCalcHistorial)); // Guardar historial
+        renderMiniCalcHistorial();
+        input.value = "";
+    };
+
+    function renderMiniCalcHistorial() {
+        const ul = document.getElementById("mini-calc-historial-list");
+        ul.innerHTML = miniCalcHistorial.map(item =>
+            `<li style="margin-bottom:2px;"><span style="color:#fff;">${item.expr}</span> <span style="color:#e62429;">= ${item.resultado}</span></li>`
+        ).join("");
+    }
 
     function getSelectedOption(select) {
         return select ? select.value : "";
@@ -319,6 +418,42 @@
                 else enemigos[idx].pa = Number(e.target.value);
             }
         }
+
+        if (e.target.classList.contains("input-valor-dano")) {
+            const idx = Number(e.target.getAttribute("data-idx"));
+            const nuevoValor = Number(e.target.value);
+            if (!isNaN(nuevoValor) && acciones[idx]) {
+                const accion = acciones[idx];
+                const valorAnterior = accion.valor || 0;
+                accion.valor = nuevoValor;
+
+                let objetivo = null;
+                if (accion.objetivo) {
+                    objetivo = aliados.find(a => a.nombre === accion.objetivo) || enemigos.find(e => e.nombre === accion.objetivo);
+                }
+                if (accion.tipo === "ofensiva" && objetivo) {
+                    objetivo.vit = Math.max(0, objetivo.vit + valorAnterior - nuevoValor);
+                }
+
+                if (accion.tipo === "defensiva" && objetivo && accion.objetivo === "Tú") {
+                    const resistencia = Number(localStorage.getItem("ATRIB_RES")) || 0;
+                    const reduccion = Number(localStorage.getItem("ATRIB_REP")) || 1;
+                    const danoBase = typeof ultimoDanoOfensivo === "number" ? ultimoDanoOfensivo : 0;
+                    const defensa = nuevoValor;
+                    let nuevoRecibe, anteriorRecibe;
+                    if (defensa !== null && defensa !== "") {
+                        nuevoRecibe = ((danoBase - resistencia) - defensa) * reduccion;
+                        anteriorRecibe = ((danoBase - resistencia) - valorAnterior) * reduccion;
+                    } else {
+                        nuevoRecibe = (danoBase - resistencia) * reduccion;
+                        anteriorRecibe = (danoBase - resistencia) * reduccion;
+                    }
+                    objetivo.vit = Math.max(0, objetivo.vit + anteriorRecibe - nuevoRecibe);
+                }
+                guardarDatos();
+                renderBandos();
+            }
+        }
     });
 
     let rondaActual = 1;
@@ -342,8 +477,10 @@
                 <td>${a.habilidad || "-"}</td>
                 <td>${a.pa}</td>
                 <td>${a.vel}</td>
-                <td>${a.valor}</td>
-                <td>${a.objetivo || a.recibe || "-"}</td>
+                <td>
+                    <input type="number" class="input-valor-dano cuadro-dano-editable" data-idx="${i}" value="${a.valor}" min="0">
+                </td>
+                <td>${a.objetivo || "-"}</td>
                 <td>${a.extras || ""}</td>
             </tr>
         `).join("");
@@ -388,6 +525,10 @@
             jugador.vel = Math.max(0, jugador.vel - vel);
         }
 
+        if (objetivo && objetivoNombre !== "Tú") {
+            objetivo.vit = Math.max(0, objetivo.vit - dano);
+        }
+
         acciones.push({
             ronda: rondaActual,
             turno: turnoActual,
@@ -415,7 +556,6 @@
         const defensorSel = document.getElementById("accion-defensor").value;
         const habilidadDef = document.getElementById("accion-habilidad-def").value.trim();
         const defensa = document.getElementById("accion-defensa").value !== "" ? Number(document.getElementById("accion-defensa").value) : null;
-        const danoReal = document.getElementById("accion-dano-real").value !== "" ? Number(document.getElementById("accion-dano-real").value) : null;
         const paDefensa = Number(document.getElementById("accion-pa-defensa").value) || 0;
         const velDefensa = Number(document.getElementById("accion-vel-defensa").value) || 0;
         const extras = document.getElementById("accion-desc").value.trim();
@@ -429,7 +569,7 @@
             defensorNombre = defensor ? defensor.nombre : "";
         }
 
-        if ((defensa !== null || danoReal !== null) && defensor && defensor.pa < paDefensa) {
+        if ((defensa !== null) && defensor && defensor.pa < paDefensa) {
             alert("El defensor no tiene suficientes PA.");
             return;
         }
@@ -440,21 +580,20 @@
 
             let recibeValor = "-";
             let detalle = "";
-            
-            if (defensorSel === "aliado-0" && typeof ultimoDanoOfensivo === "number" && defensa !== null && defensa !== "") {
+
+            if (defensorSel === "aliado-0" && typeof ultimoDanoOfensivo === "number") {
                 const resistencia = Number(localStorage.getItem("ATRIB_RES")) || 0;
                 const reduccion = Number(localStorage.getItem("ATRIB_REP")) || 1;
-                recibeValor = ((ultimoDanoOfensivo - resistencia) - defensa) * reduccion;
-                detalle = ` [(${ultimoDanoOfensivo} - ${resistencia} - ${defensa}) * ${reduccion}] = ${recibeValor}`;
-                defensor.vit = Math.max(0, defensor.vit - recibeValor);
-            }
-            else if (defensorSel.startsWith("aliado-") && danoReal !== null && danoReal !== "") {
-                recibeValor = danoReal;
-                defensor.vit = Math.max(0, defensor.vit - danoReal);
-            }
-            else if (defensorSel.startsWith("enemigo-") && danoReal !== null && danoReal !== "") {
-                recibeValor = danoReal;
-                defensor.vit = Math.max(0, defensor.vit - danoReal);
+                let danoFinal = 0;
+                if (defensa !== null && defensa !== "") {
+                    danoFinal = ((ultimoDanoOfensivo - resistencia) - defensa) * reduccion;
+                    detalle = ` [(${ultimoDanoOfensivo} - ${resistencia} - ${defensa}) * ${reduccion}] = ${danoFinal}`;
+                } else {
+                    danoFinal = (ultimoDanoOfensivo - resistencia) * reduccion;
+                    detalle = ` [(${ultimoDanoOfensivo} - ${resistencia}) * ${reduccion}] = ${danoFinal}`;
+                }
+                recibeValor = danoFinal;
+                defensor.vit = Math.max(0, defensor.vit - danoFinal);
             }
 
             acciones.push({
@@ -466,8 +605,8 @@
                 pa: paDefensa,
                 vel: velDefensa,
                 valor: defensa !== null && defensa !== "" ? defensa : "-",
-                recibe: recibeValor !== null && recibeValor !== "" ? recibeValor + detalle : "-",
-                extras: extras
+                objetivo: defensorNombre,
+                extras: extras + detalle
             });
         }
         renderBandos();
@@ -475,7 +614,6 @@
 
         document.getElementById("accion-habilidad-def").value = "";
         document.getElementById("accion-defensa").value = "";
-        document.getElementById("accion-dano-real").value = "";
         document.getElementById("accion-pa-defensa").value = 0;
         document.getElementById("accion-vel-defensa").value = 0;
         document.getElementById("accion-desc").value = "";
@@ -567,10 +705,22 @@
         }
     };
 
+    document.getElementById("btn-limpiar-calc").onclick = function() {
+        document.getElementById("input-mini-calc").value = "";
+        document.getElementById("mini-calc-resultado").textContent = "";
+        const historialList = document.getElementById("mini-calc-historial-list");
+        while (historialList.firstChild) {
+            historialList.removeChild(historialList.firstChild);
+        }
+        localStorage.removeItem("miniCalcHistorial");
+        miniCalcHistorial = []; 
+    };
+
     cargarDatos();
     renderBandos();
     renderRegistroCombate();
     renderChat();
+    renderMiniCalcHistorial();
 </script>
 </body>
 </html>

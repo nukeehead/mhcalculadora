@@ -146,10 +146,11 @@
                 alert("Solo puedes guardar un máximo de dos armas.");
                 return;
             }
-            armas.push({ nombre, atq, def, abrev });
+
+            armas.push({ nombre, atq, def, abrev, abrev_def: abrev + "D" });
 
             localStorage.setItem("ARMAS", JSON.stringify(armas));
-            window.dispatchEvent(new Event("storage")); 
+            window.dispatchEvent(new Event("storage"));
             mostrarArmasGuardadas();
             mostrarArmasEditables();
         });
@@ -158,8 +159,8 @@
             const lista = document.getElementById('lista_armas');
             lista.innerHTML = '';
             armas.forEach((arma, idx) => {
-                const li = document.createElement('li');
-                li.textContent = `${arma.abrev} - ${arma.nombre} | ATQ: ${arma.atq} | DEF: ${arma.def}`;
+                li = document.createElement('li');
+                li.textContent = `${arma.abrev} - ${arma.nombre} | ATQ: ${arma.atq} | DEF: ${arma.def} | DEF Abrev: ${arma.abrev_def}`;
                 lista.appendChild(li);
             });
             document.getElementById('armas_guardadas').style.display = armas.length > 0 ? 'block' : 'none';
