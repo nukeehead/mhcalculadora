@@ -23,7 +23,7 @@
             <form id="form_habilidad" autocomplete="off">
                 <div class="form-row">
                     <label for="nombre_habilidad">Nombre:</label>
-                    <input type="text" id="nombre_habilidad" maxlength="32">
+                    <input type="text" id="nombre_habilidad">
                 </div>
                 <div class="form-row">
                     <label for="tipo_habilidad">Tipo:</label>
@@ -49,7 +49,7 @@
                 </div>
                 <div class="form-row">
                     <label for="alcance_habilidad">Alcance:</label>
-                    <input type="text" id="alcance_habilidad" maxlength="32" placeholder="Ej: 3 / 'Enemigo'">
+                    <input type="text" id="alcance_habilidad" placeholder="Ej: 3 / 'Enemigo'">
                 </div>
                 <div class="form-row" id="valor_row">
                     <label for="valor_base">Valor base:</label>
@@ -65,17 +65,17 @@
                 <div id="resultado_valor" style="margin-bottom:10px; color:#e62429; font-weight:bold;"></div>
                 <div class="form-row">
                     <label for="indirecto_tipo">Indirecto:</label>
-                    <input type="text" id="indirecto_tipo" maxlength="32" placeholder="Tipo de indirecto">
+                    <input type="text" id="indirecto_tipo" placeholder="Tipo de indirecto">
                     <input type="number" id="indirecto_porcentaje" min="0" max="1" step="0.01" placeholder="0.5">
                     <input type="number" id="indirecto_acciones" min="1" step="1" placeholder="Acciones" style="width:80px;">
                 </div>
                 <div class="form-row">
                     <label for="anotaciones_habilidad">Anotaciones:</label>
-                    <input type="text" id="anotaciones_habilidad" maxlength="64" placeholder="Ej: Causa quemadura">
+                    <input type="text" id="anotaciones_habilidad" placeholder="Ej: Causa quemadura">
                 </div>
                 <div class="form-row">
                     <label for="cd_habilidad">Cooldown:</label>
-                    <input type="text" id="cd_habilidad" maxlength="32" placeholder="Turnos o texto">
+                    <input type="text" id="cd_habilidad" placeholder="Turnos o texto">
                 </div>
                 <button type="submit" class="btn-registrar">Registrar Habilidad</button>
             </form>
@@ -274,10 +274,19 @@
                     .filter(h => h.tipo === tipo)
                     .forEach((h) => {
                         let linea = '';
+                        // Muestra daño y defensa si existen
+                        let valorLabel = '';
+                        if (tipo === 'ofensivo' && h.valor_final) {
+                            valorLabel = `-${h.valor_final}`;
+                        } else if (tipo === 'defensivo' && h.valor_final) {
+                            valorLabel = `-${h.valor_final}`;
+                        } else if (tipo === 'suplementario' && h.valor_final) {
+                            valorLabel = `-${h.valor_final}`;
+                        }
                         if (h.nombre) linea += `<strong>${h.nombre}</strong>`;
                         if (h.tier) linea += ` (TIER ${h.tier})`;
                         if (h.pa) linea += ` (${h.pa} PA)`;
-                        if (h.valor_final) linea += ` -${h.valor_final}`;
+                        if (valorLabel) linea += ` ${valorLabel}`;
                         if (h.indirecto_tipo && h.indirecto_valor && h.indirecto_acciones) {
                             linea += ` / ${h.indirecto_tipo} -${h.indirecto_valor} durante ${h.indirecto_acciones} acciones`;
                         }
